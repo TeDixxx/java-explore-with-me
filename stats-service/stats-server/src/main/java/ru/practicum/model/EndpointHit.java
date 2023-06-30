@@ -1,7 +1,5 @@
 package ru.practicum.model;
 
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;

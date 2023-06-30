@@ -2,7 +2,7 @@ package ru.practicum.model;
 
 public class HitMapper {
 
-    public static EndpointHitDto toHitDto(EndpointHit endpointHit){
+    public static EndpointHitDto toHitDto(EndpointHit endpointHit) {
         return EndpointHitDto.builder()
                 .id(endpointHit.getId())
                 .app(endpointHit.getApp())
@@ -13,7 +13,7 @@ public class HitMapper {
 
     }
 
-    public static EndpointHit fromHitDto(EndpointHitDto endpointHitDto){
+    public static EndpointHit fromHitDto(EndpointHitDto endpointHitDto) {
         return EndpointHit.builder()
                 .id(endpointHitDto.getId())
                 .app(endpointHitDto.getApp())
