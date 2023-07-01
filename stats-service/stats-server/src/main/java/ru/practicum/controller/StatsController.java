@@ -9,6 +9,7 @@ import ru.practicum.model.HitMapper;
 import ru.practicum.model.EndpointHitDto;
 import ru.practicum.service.StatisticService;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class StatsController {
     private final StatisticService service;
 
     @PostMapping("/hit")
-    public EndpointHitDto save(@RequestBody EndpointHitDto hitDto) {
+    public EndpointHitDto save(@RequestBody @Valid EndpointHitDto hitDto) {
         return HitMapper.toHitDto(service.save(HitMapper.fromHitDto(hitDto)));
     }
 
