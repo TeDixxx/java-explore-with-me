@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.interfaces.UserRepository;
-import ru.practicum.user.interfaces.UserService;
+import ru.practicum.user.interfaces.AdminUserService;
 
 import ru.practicum.user.model.UserMapper;
 
@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImp implements UserService {
+public class AdminUserServiceImp implements AdminUserService {
+
 
     private final UserRepository repository;
 
@@ -34,7 +35,7 @@ public class UserServiceImp implements UserService {
                     .map(UserMapper::toUserDto)
                     .collect(Collectors.toList());
         } else {
-            return repository.findByIds(ids, pageable)
+            return repository.findByIdIn(ids, pageable)
                     .stream()
                     .map(UserMapper::toUserDto)
                     .collect(Collectors.toList());
