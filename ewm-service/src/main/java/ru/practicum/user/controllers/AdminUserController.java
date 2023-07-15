@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/admin/users")
 public class AdminUserController {
 
-    //@Autowired
+
     private final AdminUserService service;
 
     @PostMapping
@@ -28,9 +28,9 @@ public class AdminUserController {
     }
 
     @GetMapping
-    public List<UserDto> getUsers(@RequestParam List<Long> ids,
-                                  @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                  @Positive @RequestParam(defaultValue = "10") Integer size) {
+    public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
+                                  @PositiveOrZero @RequestParam(name ="from", defaultValue = "0") Integer from,
+                                  @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
         return service.getUsers(ids, from, size);
     }
 

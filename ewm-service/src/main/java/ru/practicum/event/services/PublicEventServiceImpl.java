@@ -14,6 +14,7 @@ import ru.practicum.event.interfaces.EventRepository;
 import ru.practicum.event.interfaces.PublicEventService;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventMapper;
+import ru.practicum.exceptions.BadRequestException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.model.EndpointHitDto;
 import ru.practicum.model.ViewStatsDto;
@@ -52,9 +53,21 @@ public class PublicEventServiceImpl implements PublicEventService {
         Event event = eventRepository.findById(eventId).orElseThrow(()
                 -> new NotFoundException("event not found"));
 
-        eventRepository.save(event);
+        if (!event.getState().equals(State.PUBLISHED)) {
+            throw new NotFoundException("NOT FOUND");
+        }
 
-        return EventMapper.toFullDto(event);
+        //  eventRepository.save(event);
+
+
+        saveHit(request, eventId);
+        EventFullDto dto = EventMapper.toFullDto(event);
+
+        dto.setViews(0L);
+
+        dto.setViews(dto.getViews() + 1L);
+
+        return dto;
     }
 
     @Override
@@ -67,21 +80,22 @@ public class PublicEventServiceImpl implements PublicEventService {
                                                  String sort, int from,
                                                  int size, HttpServletRequest request) {
 
-//        client.saveStats(new EndpointHitDto(null,
-//                "ewm-service",
-//                "/events",
-//                request.getRemoteAddr(),
-//                LocalDateTime.now())
-//        );
-        LocalDateTime start = LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        LocalDateTime end = LocalDateTime.parse(rangeEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-        if (rangeStart.isEmpty()) {
-            start = LocalDateTime.now().plusHours(3);
+        LocalDateTime start = LocalDateTime.now().plusSeconds(1L);
+        LocalDateTime end = LocalDateTime.now().plusYears(10L);
+
+
+        if (rangeStart != null) {
+            start = LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }
 
-        if (rangeEnd.isEmpty()) {
-            end = LocalDateTime.now().plusDays(2);
+        if (rangeEnd != null) {
+            end = LocalDateTime.parse(rangeEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        }
+
+
+        if (end.isBefore(start)) {
+            throw new BadRequestException("BAD REQUEST");
         }
 
         if (categories == null || categories.isEmpty()) {
@@ -104,14 +118,21 @@ public class PublicEventServiceImpl implements PublicEventService {
 
         List<EventShortDto> eventShortDto = publicEvents.stream()
                 .map(EventMapper::toShortDto)
-                //.peek(e -> e.setViews(viewsEvent(rangeStart, rangeEnd, "/events/" + e.getId(), false)))
+                .peek(e -> e.setViews(viewsEvent(rangeStart, rangeEnd, "/events/" + e.getId(), false)))
                 .collect(Collectors.toList());
 
         if (sort.equals("VIEWS")) {
             eventShortDto.stream()
-                    .sorted(Comparator.comparing(EventShortDto::getViews));
+                    .sorted(Comparator.comparing(EventShortDto::getViews)).collect(Collectors.toList());
         }
+//        client.saveStats(new EndpointHitDto(null,
+//                "ewm-service",
+//                "/events",
+//                request.getRemoteAddr(),
+//                LocalDateTime.now())
+//        );
 
+        saveHit(request, null);
 
         return eventShortDto;
     }
@@ -120,8 +141,22 @@ public class PublicEventServiceImpl implements PublicEventService {
         return requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
     }
 
-//    private Long viewsEvent(String rangeStart, String rangeEnd, String uris, Boolean unique) {
-//        List<ViewStatsDto> dto = client.getStat(rangeStart, rangeEnd, List.of(uris), unique);
-//        return dto.size() > 0 ? dto.get(0).getHits() : 0L;
-//    }
+    private Long viewsEvent(String rangeStart, String rangeEnd, String uris, Boolean unique) {
+        List<ViewStatsDto> dto = client.getStat(rangeStart, rangeEnd, List.of(uris), unique);
+        return dto.size() > 0 ? dto.get(0).getHits() : 0L;
+    }
+
+
+    private void saveHit(HttpServletRequest request, Long eventId) {
+        EndpointHitDto endpointHitDto = new EndpointHitDto();
+        endpointHitDto.setApp("ewm-service");
+        endpointHitDto.setTimestamp(LocalDateTime.now());
+        endpointHitDto.setIp(request.getRemoteAddr());
+        if (eventId == null) {
+            endpointHitDto.setUri("/events");
+        } else {
+            endpointHitDto.setUri("/events/" + eventId);
+        }
+        client.saveStats(endpointHitDto);
+    }
 }

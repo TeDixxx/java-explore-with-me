@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import ru.practicum.category.model.Category;
 import ru.practicum.event.enums.State;
 import ru.practicum.event.model.Location;
@@ -21,6 +22,7 @@ public class EventFullDto {
 
     Long id;
 
+    @Length(min = 20, max = 2000)
     String annotation;
 
     Category category;
@@ -30,6 +32,7 @@ public class EventFullDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdOn;
 
+    @Length(min = 20, max = 7000)
     String description;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -44,6 +47,7 @@ public class EventFullDto {
 
     State state;
 
+    @Length(min = 3, max = 120)
     String title;
 
     UserShortDto initiator;
@@ -52,5 +56,5 @@ public class EventFullDto {
 
     Location location;
 
-    Long views;
+     Long views;
 }

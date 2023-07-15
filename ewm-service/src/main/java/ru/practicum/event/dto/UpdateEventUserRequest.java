@@ -8,7 +8,6 @@ import org.hibernate.validator.constraints.Length;
 import ru.practicum.event.enums.StateAction;
 import ru.practicum.event.model.Location;
 
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -39,6 +38,6 @@ public class UpdateEventUserRequest {
 
     StateAction stateAction;
 
-    @Size(min = 3, max = 120)
+    @Length(min = 3, max = 120)
     String title;
 }

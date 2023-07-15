@@ -28,11 +28,18 @@ public class StatisticServiceImpl implements StatisticService {
                 return repository.getStats(start, end);
             }
         } else {
+
+            if (uris.size() == 1) {
+                uris.set(0, uris.get(0).replaceAll("^\\[|\\]$", ""));
+            }
+
             if (unique) {
                 return repository.getStatsUniqueUri(start, end, uris);
             } else {
                 return repository.getStatsUri(start, end, uris);
             }
+
+
         }
     }
 }

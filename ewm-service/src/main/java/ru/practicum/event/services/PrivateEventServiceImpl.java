@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 
-import org.springframework.web.server.ResponseStatusException;
+
 import ru.practicum.category.interfaces.CategoryRepository;
 import ru.practicum.category.model.Category;
 import ru.practicum.event.dto.EventFullDto;
@@ -20,6 +20,8 @@ import ru.practicum.event.interfaces.EventRepository;
 import ru.practicum.event.interfaces.PrivateEventService;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventMapper;
+import ru.practicum.exceptions.BadRequestException;
+import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
@@ -55,11 +57,23 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     public EventFullDto addNewEvent(Long userId, NewEventDto dto) {
 
         if (dto.getEventDate().isBefore(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Date can't be before");
+            throw new BadRequestException("BAD REQUEST");
         }
 
         if (dto.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new BadRequestException("BAD REQUEST");
+        }
+
+        if (dto.getPaid() == null) {
+            dto.setPaid(false);
+        }
+
+        if (dto.getParticipantLimit() == null) {
+            dto.setParticipantLimit(0L);
+        }
+
+        if (dto.getRequestModeration() == null) {
+            dto.setRequestModeration(true);
         }
 
         Category category = categoryRepository.findById(dto.getCategory()).orElseThrow(()
@@ -87,7 +101,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public EventFullDto getUserEvent(Long userId, Long eventId) {
-        User user = userRepository.findById(userId).orElseThrow(()
+         userRepository.findById(userId).orElseThrow(()
                 -> new NotFoundException("User not found"));
 
         eventRepository.findById(eventId).orElseThrow(()
@@ -111,12 +125,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
         if (request.getEventDate() != null) {
             if (request.getEventDate().isBefore(LocalDateTime.now().plusHours(2L)) && request.getEventDate() != null) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT);
+                throw new BadRequestException("BAD REQUEST");
             }
         }
 
         if (event.getState().equals(State.PUBLISHED)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
+            throw new ConflictException("CONFLICT");
         }
 
 
@@ -152,11 +166,11 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             event.setTitle(request.getTitle());
         }
 
-        if (request.getStateAction().equals(StateAction.SEND_TO_REVIEW)) {
+        if (request.getStateAction() != null && request.getStateAction().equals(StateAction.SEND_TO_REVIEW)) {
             event.setState(State.PENDING);
         }
 
-        if (request.getStateAction().equals(StateAction.CANCEL_REVIEW)) {
+        if (request.getStateAction() != null && request.getStateAction().equals(StateAction.CANCEL_REVIEW)) {
             event.setState(State.CANCELED);
         }
 
@@ -167,74 +181,80 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         }
 
 
-        return EventMapper.toFullDto(event);
+        return EventMapper.toFullDto(eventRepository.save(event));
     }
 
-    //???
+
     @Override
-    public EventRequestStatusUpdateResult updateRequestStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest request) {
-        User initiator = userRepository.findById(userId).orElseThrow(()
+    public EventRequestStatusUpdateResult updateRequestStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest dto) {
+         userRepository.findById(userId).orElseThrow(()
                 -> new NotFoundException("User not found"));
 
         Event event = eventRepository.findById(eventId).orElseThrow(()
                 -> new NotFoundException("Event not found"));
 
-        if (!event.getInitiator().equals(initiator)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only initiator can accept");
+
+        List<Request> requests = new ArrayList<>();
+
+
+        if (dto.getRequestIds() != null) {
+            requests = requestRepository.findByIdIn(dto.getRequestIds());
         }
 
-        List<Request> requests = requestRepository.findByIdIn(request.getRequestIds());
+
 
         Long counter = requestRepository.countByEventId(event.getId());
 
         if (event.getParticipantLimit() <= counter) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
+            throw new ConflictException("CONFLICT");
         }
 
         List<ParticipationRequestDto> confirmed = new ArrayList<>();
         List<ParticipationRequestDto> rejected = new ArrayList<>();
 
-            if (RequestStatus.CONFIRMED.equals(request.getStatus()) && requests.size() > 0) {
-                int min = 0;
-                int max;
+        if (RequestStatus.CONFIRMED.equals(dto.getStatus()) && requests.size() > 0) {
+            int min = 0;
+            int max;
 
-                if (event.getParticipantLimit() <= requests.size()) {
-                    max = Math.toIntExact(event.getParticipantLimit());
-                } else {
-                    max = requests.size();
-                }
-
-                for (int i = 0; i < max; i++) {
-                    requests.get(i).setStatus(RequestStatus.CONFIRMED);
-                    requestRepository.save(requests.get(i));
-                    min++;
-                    confirmed.add(RequestMapper.toDto(requests.get(i)));
-                }
-
-                for(int i = min; i < requests.size(); i++){
-
-                    if (requests.get(i).getStatus().equals(RequestStatus.CONFIRMED)) {
-                        throw new ResponseStatusException(HttpStatus.CONFLICT);
-                    }
-
-                    requests.get(i).setStatus(RequestStatus.REJECTED);
-                    requestRepository.save(requests.get(i));
-                    rejected.add(RequestMapper.toDto(requests.get(i)));
-
-                }
-
+            if (event.getParticipantLimit() <= requests.size()) {
+                max = Math.toIntExact(event.getParticipantLimit());
             } else {
-                for (int i = 0; i < requests.size(); i++) {
-
-                    if (requests.get(i).getStatus().equals(RequestStatus.CONFIRMED)) {
-                        throw new ResponseStatusException(HttpStatus.CONFLICT);
-                    }
-                    requests.get(i).setStatus(RequestStatus.REJECTED);
-                    requestRepository.save(requests.get(i));
-                    rejected.add(RequestMapper.toDto(requests.get(i)));
-
-                }
+                max = requests.size();
             }
+
+            for (int i = 0; i < max; i++) {
+                requests.get(i).setStatus(RequestStatus.CONFIRMED);
+                requestRepository.save(requests.get(i));
+                min++;
+                confirmed.add(RequestMapper.toDto(requests.get(i)));
+            }
+
+            for(int i = min; i < requests.size(); i++){
+
+                if (requests.get(i).getStatus().equals(RequestStatus.CONFIRMED)) {
+                    throw new ConflictException("CONFLICT");
+                }
+
+                requests.get(i).setStatus(RequestStatus.REJECTED);
+                requestRepository.save(requests.get(i));
+                rejected.add(RequestMapper.toDto(requests.get(i)));
+
+            }
+
+        } else {
+            for (int i = 0; i < requests.size(); i++) {
+
+                if (requests.get(i).getStatus().equals(RequestStatus.CONFIRMED)) {
+                    throw new ConflictException("CONFLICT");
+                }
+                requests.get(i).setStatus(RequestStatus.REJECTED);
+                requestRepository.save(requests.get(i));
+                rejected.add(RequestMapper.toDto(requests.get(i)));
+
+            }
+        }
+
+
 
         return new EventRequestStatusUpdateResult(confirmed, rejected);
 
@@ -243,15 +263,11 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Override
     public List<ParticipationRequestDto> getParticipationRequests(Long userId, Long eventId) {
 
-        User user = userRepository.findById(userId).orElseThrow(()
+        userRepository.findById(userId).orElseThrow(()
                 -> new NotFoundException("User not found"));
 
-        Event event = eventRepository.findById(eventId).orElseThrow(()
+        eventRepository.findById(eventId).orElseThrow(()
                 -> new NotFoundException("Event not found"));
-
-        if (!event.getInitiator().equals(user)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
 
         List<Request> requests = requestRepository.findAllByEventId(eventId);
 
@@ -261,4 +277,3 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
 }
-

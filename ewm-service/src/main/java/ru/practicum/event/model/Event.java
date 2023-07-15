@@ -3,6 +3,7 @@ package ru.practicum.event.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.validator.constraints.Length;
 import ru.practicum.category.model.Category;
 import ru.practicum.event.enums.State;
 import ru.practicum.user.model.User;
@@ -59,6 +60,7 @@ public class Event {
     State state;
 
     @Column(name = "title")
+
     String title;
 
     @ManyToOne
@@ -71,8 +73,8 @@ public class Event {
     @Embedded
     Location location;
 
-    @Column(name = "views")
-    Long views;
+//    @Column(name = "views")
+//    Long views;
 
 
 }

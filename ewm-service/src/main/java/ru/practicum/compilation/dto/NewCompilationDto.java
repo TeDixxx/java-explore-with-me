@@ -1,26 +1,27 @@
-package ru.practicum.user.dto;
+package ru.practicum.compilation.dto;
 
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class NewUserRequest {
-    @Email
-    @NotBlank
-    @Length(min = 6, max = 254)
-    String email;
+public class NewCompilationDto {
+
+    List<Long> events;
+
+    Boolean pinned;
+
     @NotNull
     @NotBlank
-    @Length(min = 2, max = 250)
-    String name;
+    @Length(max = 50)
+    String title;
 }

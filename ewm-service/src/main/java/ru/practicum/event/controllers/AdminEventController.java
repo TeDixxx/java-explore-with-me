@@ -8,6 +8,7 @@ import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.enums.State;
 import ru.practicum.event.interfaces.AdminEventService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -24,14 +25,14 @@ public class AdminEventController {
                                          @RequestParam(required = false) List<Long> categories,
                                          @RequestParam(required = false) String rangeStart,
                                          @RequestParam(required = false) String rangeEnd,
-                                         @RequestParam(name = "from", defaultValue = "0") int from,
-                                         @RequestParam(name = "size", defaultValue = "10") int size) {
+                                         @RequestParam(defaultValue = "0") Integer from,
+                                         @RequestParam(defaultValue = "10") Integer size) {
 
         return service.findEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto update(@PathVariable Long eventId, @RequestBody UpdateEventAdminRequest dto) {
+    public EventFullDto update(@PathVariable Long eventId, @RequestBody @Valid UpdateEventAdminRequest dto) {
         return service.update(eventId, dto);
     }
 
