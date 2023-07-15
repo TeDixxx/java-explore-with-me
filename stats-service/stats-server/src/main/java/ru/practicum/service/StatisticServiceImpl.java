@@ -1,7 +1,9 @@
 package ru.practicum.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.model.ViewStatsDto;
 import ru.practicum.model.EndpointHit;
 import ru.practicum.repository.StatsRepository;
@@ -21,6 +23,11 @@ public class StatisticServiceImpl implements StatisticService {
 
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+
+        if (end.isBefore(start)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         if (uris == null || uris.isEmpty()) {
             if (unique) {
                 return repository.getStatsUnique(start, end);
@@ -28,10 +35,6 @@ public class StatisticServiceImpl implements StatisticService {
                 return repository.getStats(start, end);
             }
         } else {
-
-            if (uris.size() == 1) {
-                uris.set(0, uris.get(0).replaceAll("^\\[|\\]$", ""));
-            }
 
             if (unique) {
                 return repository.getStatsUniqueUri(start, end, uris);
