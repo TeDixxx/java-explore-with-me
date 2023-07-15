@@ -50,7 +50,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии");
         }
 
-        Long countRequest = requestRepository.countByEventId(eventId);
+        Long countRequest = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         if (event.getParticipantLimit() > 0 && event.getParticipantLimit() <= countRequest) {
             throw new ConflictException("Достигнут лимит запросов на участие");
         }

@@ -3,10 +3,7 @@ package ru.practicum.event.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.StatsClient;
 import ru.practicum.category.interfaces.CategoryRepository;
 import ru.practicum.category.model.Category;
@@ -61,8 +58,8 @@ public class AdminEventServiceImpl implements AdminEventService {
             eventState = Arrays.asList(State.values());
         }
 
-        LocalDateTime start = LocalDateTime.now().plusYears(1L);
-        LocalDateTime end = LocalDateTime.now().minusYears(10L);
+        LocalDateTime start = LocalDateTime.now().minusYears(1L);
+        LocalDateTime end = LocalDateTime.now().plusYears(10L);
 
         if (rangeStart != null) {
             start = LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -92,7 +89,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         return events.stream()
                 .map(EventMapper::toFullDto)
                 .peek(e -> e.setConfirmedRequests(requestRepository.countByEventIdAndStatus(e.getId(), RequestStatus.CONFIRMED)))
-               // .peek(e -> e.setViews(getViews(rangeStart, rangeEnd, "/events/" + e.getId(), false)))
+                // .peek(e -> e.setViews(getViews(rangeStart, rangeEnd, "/events/" + e.getId(), false)))
                 .collect(Collectors.toList());
     }
 

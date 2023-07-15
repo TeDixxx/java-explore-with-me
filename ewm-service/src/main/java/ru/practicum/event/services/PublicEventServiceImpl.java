@@ -43,21 +43,12 @@ public class PublicEventServiceImpl implements PublicEventService {
     @Override
     public EventFullDto getEventById(Long eventId, HttpServletRequest request) {
 
-//        client.saveStats(new EndpointHitDto(null,
-//                "ewm-service",
-//                request.getRequestURI(),
-//                request.getRemoteAddr(),
-//                LocalDateTime.now())
-//        );
-
         Event event = eventRepository.findById(eventId).orElseThrow(()
                 -> new NotFoundException("event not found"));
 
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new NotFoundException("NOT FOUND");
         }
-
-        //  eventRepository.save(event);
 
 
         saveHit(request, eventId);
@@ -125,12 +116,6 @@ public class PublicEventServiceImpl implements PublicEventService {
             eventShortDto.stream()
                     .sorted(Comparator.comparing(EventShortDto::getViews)).collect(Collectors.toList());
         }
-//        client.saveStats(new EndpointHitDto(null,
-//                "ewm-service",
-//                "/events",
-//                request.getRemoteAddr(),
-//                LocalDateTime.now())
-//        );
 
         saveHit(request, null);
 

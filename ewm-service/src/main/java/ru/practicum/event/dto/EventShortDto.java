@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserShortDto;
 
 import javax.validation.constraints.Future;

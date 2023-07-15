@@ -33,15 +33,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Event findByInitiatorIdAndId(Long userId, Long eventId);
 
-    List<Event> findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateIsAfterAndEventDateIsBefore(List<Long> users, List<State> states,List<Long> categories,LocalDateTime start, LocalDateTime end, Pageable pageable);
+    List<Event> findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateIsAfterAndEventDateIsBefore(List<Long> users, List<State> states, List<Long> categories, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
-
-
-    @Query("SELECT e FROM Event e " +
-            "WHERE e.initiator.id IN ?1 " +
-            "AND e.state IN ?2 " +
-            "AND e.category.id IN ?3 " +
-            "AND e.eventDate BETWEEN ?4 AND ?5")
-    List<Event> adminFindEvents(List<Long> users, List<State> states, List<Long> categories,
-                                LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 }

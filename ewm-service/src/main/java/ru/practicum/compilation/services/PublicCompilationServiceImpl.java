@@ -23,10 +23,10 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        List<Compilation> compilations = repository.findByPinned(pinned,pageable);
+        List<Compilation> compilations = repository.findByPinned(pinned, pageable);
 
         return compilations.stream()
-                .map(CompilationMapper ::toDto)
+                .map(CompilationMapper::toDto)
                 .collect(Collectors.toList());
     }
 

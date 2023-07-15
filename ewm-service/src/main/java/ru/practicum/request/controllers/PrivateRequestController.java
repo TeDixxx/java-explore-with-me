@@ -20,7 +20,7 @@ public class PrivateRequestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ParticipationRequestDto createRequest(@PathVariable @NotNull Long userId, @RequestParam  Long eventId) {
+    public ParticipationRequestDto createRequest(@PathVariable @NotNull Long userId, @RequestParam Long eventId) {
         return service.createRequest(userId, eventId);
     }
 

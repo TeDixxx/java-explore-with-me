@@ -101,7 +101,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public EventFullDto getUserEvent(Long userId, Long eventId) {
-         userRepository.findById(userId).orElseThrow(()
+        userRepository.findById(userId).orElseThrow(()
                 -> new NotFoundException("User not found"));
 
         eventRepository.findById(eventId).orElseThrow(()
@@ -187,7 +187,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public EventRequestStatusUpdateResult updateRequestStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest dto) {
-         userRepository.findById(userId).orElseThrow(()
+        userRepository.findById(userId).orElseThrow(()
                 -> new NotFoundException("User not found"));
 
         Event event = eventRepository.findById(eventId).orElseThrow(()
@@ -196,14 +196,11 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
         List<Request> requests = new ArrayList<>();
 
-
         if (dto.getRequestIds() != null) {
             requests = requestRepository.findByIdIn(dto.getRequestIds());
         }
 
-
-
-        Long counter = requestRepository.countByEventId(event.getId());
+        Long counter = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
 
         if (event.getParticipantLimit() <= counter) {
             throw new ConflictException("CONFLICT");
@@ -229,7 +226,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 confirmed.add(RequestMapper.toDto(requests.get(i)));
             }
 
-            for(int i = min; i < requests.size(); i++){
+            for (int i = min; i < requests.size(); i++) {
 
                 if (requests.get(i).getStatus().equals(RequestStatus.CONFIRMED)) {
                     throw new ConflictException("CONFLICT");
@@ -253,7 +250,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
             }
         }
-
 
 
         return new EventRequestStatusUpdateResult(confirmed, rejected);

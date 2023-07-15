@@ -1,9 +1,7 @@
 package ru.practicum.category.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.interfaces.AdminCategoryService;
@@ -20,7 +18,7 @@ public class AdminCategoryServiceImp implements AdminCategoryService {
 
     @Override
     public CategoryDto create(NewCategoryDto newCategoryDto) {
-            return CategoryMapper.toCategoryDto(repository.save(CategoryMapper.toCategory(newCategoryDto)));
+        return CategoryMapper.toCategoryDto(repository.save(CategoryMapper.toCategory(newCategoryDto)));
     }
 
     @Override
@@ -28,14 +26,14 @@ public class AdminCategoryServiceImp implements AdminCategoryService {
         repository.findById(id).orElseThrow(() -> new NotFoundException("Category not found"));
         dto.setId(id);
 
-            return CategoryMapper.toCategoryDto(repository.save(CategoryMapper.fromDto(dto)));
+        return CategoryMapper.toCategoryDto(repository.save(CategoryMapper.fromDto(dto)));
 
     }
 
     @Override
     public void delete(Long id) {
-      repository.findById(id).orElseThrow(() -> new NotFoundException("Category not found"));
-            repository.deleteById(id);
+        repository.findById(id).orElseThrow(() -> new NotFoundException("Category not found"));
+        repository.deleteById(id);
 
     }
 }

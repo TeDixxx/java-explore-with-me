@@ -12,7 +12,7 @@ public class CompilationMapper {
         return CompilationDto.builder()
                 .id(compilation.getId())
                 .events(compilation.getEvents().stream()
-                        .map(EventMapper ::toShortDto).collect(Collectors.toList()))
+                        .map(EventMapper::toShortDto).collect(Collectors.toList()))
                 .pinned(compilation.getPinned())
                 .title(compilation.getTitle())
                 .build();

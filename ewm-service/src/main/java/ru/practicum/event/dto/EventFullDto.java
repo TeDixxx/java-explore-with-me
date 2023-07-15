@@ -56,5 +56,5 @@ public class EventFullDto {
 
     Location location;
 
-     Long views;
+    Long views;
 }

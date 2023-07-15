@@ -3,7 +3,6 @@ package ru.practicum.request.interfaces;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.practicum.event.model.Event;
 
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.RequestStatus;
@@ -20,8 +19,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findAllByEventId(Long eventId);
 
     Long countByEventIdAndStatus(Long eventId, RequestStatus status);
-
-    Long countByEventId(Long eventId);
 
     List<Request> findByRequester(User requester);
 

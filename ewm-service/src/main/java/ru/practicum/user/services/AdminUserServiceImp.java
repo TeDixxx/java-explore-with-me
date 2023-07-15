@@ -26,7 +26,7 @@ public class AdminUserServiceImp implements AdminUserService {
 
     @Override
     public UserDto createUser(NewUserRequest userRequest) {
-            return UserMapper.toUserDto(repository.save(UserMapper.toUser(userRequest)));
+        return UserMapper.toUserDto(repository.save(UserMapper.toUser(userRequest)));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class AdminUserServiceImp implements AdminUserService {
                     .stream()
                     .map(UserMapper::toUserDto)
                     .collect(Collectors.toList());
-      }
+        }
 
 
     }

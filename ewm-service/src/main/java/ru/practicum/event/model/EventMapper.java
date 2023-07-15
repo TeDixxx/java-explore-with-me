@@ -30,7 +30,6 @@ public class EventMapper {
                 .initiator(UserMapper.toShortUSer(event.getInitiator()))
                 .participantLimit(event.getParticipantLimit())
                 .location(event.getLocation())
-               // .views(event.getViews())
                 .build();
     }
 
@@ -44,7 +43,6 @@ public class EventMapper {
                 .initiator(UserMapper.toShortUSer(event.getInitiator()))
                 .paid(event.getPaid())
                 .title(event.getTitle())
-               // .views(event.getViews())
                 .build();
     }
 

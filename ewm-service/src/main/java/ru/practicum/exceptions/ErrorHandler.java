@@ -15,8 +15,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
 
 
 @RestControllerAdvice
@@ -25,44 +23,6 @@ public class ErrorHandler {
 
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
-
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public ApiError handleNotFoundException(final NotFoundException e) {
-//        return
-//    }
-//
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.CONFLICT)
-//    public ApiError handleConflictException(final ConflictException e) {
-//        return conflict(e);
-//    }
-//
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ApiError  handleBadRequestException(final BadRequestException e) {
-//        return
-//    }
-
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public Map<String, String> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-//        return Map.of("Bad request", e.getMessage());
-//    }
-//
-//
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public Map<String, String> handleBadRequest(final MethodArgumentTypeMismatchException e) {
-//        return Map.of("Bad request", Objects.requireNonNull(e.getMessage()));
-//    }
-//
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public Map<String, String> handleBadRequest(final MissingServletRequestParameterException e) {
-//        return Map.of("Bad request", Objects.requireNonNull(e.getMessage()));
-//    }
-
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -87,7 +47,6 @@ public class ErrorHandler {
     public ApiError handleConflict(final DataIntegrityViolationException e) {
         return conflict(e);
     }
-
 
 
     @ExceptionHandler
