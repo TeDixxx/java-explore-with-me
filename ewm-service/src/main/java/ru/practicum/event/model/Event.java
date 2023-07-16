@@ -72,8 +72,4 @@ public class Event {
     @Embedded
     Location location;
 
-//    @Column(name = "views")
-//    Long views;
-
-
 }
