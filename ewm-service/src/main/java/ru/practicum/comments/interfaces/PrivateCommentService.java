@@ -14,7 +14,7 @@ public interface PrivateCommentService {
 
     CommentDto addLikeOrDislikeForComment(Long commentId, Long userId, Boolean isLike);
 
-     void deleteLikeOrDislike(Long commentId, Long userId,Boolean isLike);
+    void deleteLikeOrDislike(Long commentId, Long userId, Boolean isLike);
 
 
 }

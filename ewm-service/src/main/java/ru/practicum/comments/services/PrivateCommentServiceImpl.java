@@ -130,7 +130,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
             throw new BadRequestException("This user can't put more");
         }
 
-        likeRepository.deleteByCommentAndOwner(comment,user);
+        likeRepository.deleteByCommentAndOwner(comment, user);
 
         if (isLike != null) {
             if (isLike.equals(true)) {

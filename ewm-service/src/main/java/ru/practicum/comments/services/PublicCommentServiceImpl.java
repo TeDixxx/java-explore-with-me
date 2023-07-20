@@ -25,11 +25,11 @@ public class PublicCommentServiceImpl implements PublicCommentService {
     @Override
     public List<CommentDto> getCommentsByEventId(Long eventId) {
 
-         eventRepository.findById(eventId).orElseThrow(()
+        eventRepository.findById(eventId).orElseThrow(()
                 -> new NotFoundException("Event not found"));
 
         return commentRepository.findAllByEventId(eventId).stream()
-                .map(CommentMapper ::toCommentDto)
+                .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
     }
 }

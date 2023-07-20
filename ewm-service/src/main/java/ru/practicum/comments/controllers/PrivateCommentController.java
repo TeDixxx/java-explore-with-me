@@ -45,8 +45,8 @@ public class PrivateCommentController {
     @PostMapping("/{commentId}/like")
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto addLikeForComment(@PathVariable Long commentId,
-                                                 @PathVariable Long userId,
-                                                 @RequestParam Boolean isLike) {
+                                        @PathVariable Long userId,
+                                        @RequestParam Boolean isLike) {
 
         return service.addLikeOrDislikeForComment(commentId, userId, isLike);
     }
@@ -54,9 +54,9 @@ public class PrivateCommentController {
     @DeleteMapping("/{commentId}/delete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLikeOrDislike(@PathVariable Long commentId,
-                                          @PathVariable Long userId,
-                                          @RequestParam Boolean isLike) {
+                                    @PathVariable Long userId,
+                                    @RequestParam Boolean isLike) {
 
-         service.deleteLikeOrDislike(commentId, userId, isLike);
+        service.deleteLikeOrDislike(commentId, userId, isLike);
     }
 }
