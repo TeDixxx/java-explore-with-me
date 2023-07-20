@@ -5,7 +5,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+
+import javax.validation.constraints.Size;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
@@ -14,8 +15,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class NewCommentDto {
 
-    @NotNull
     @NotBlank
+    @Size(max = 1000)
     String text;
 
     Long eventId;

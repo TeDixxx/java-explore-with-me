@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS events
     participant_limit  BIGINT                                  ,
     published_on       TIMESTAMP WITHOUT TIME ZONE,
     request_moderation BOOLEAN                                 ,
-    state              VARCHAR                                  NOT NULL,
+    state              VARCHAR(35)                                  NOT NULL,
     title              VARCHAR(120)                             NOT NULL,
 
 
